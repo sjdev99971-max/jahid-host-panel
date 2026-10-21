@@ -1,17 +1,27 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { createUser } from "@/lib/db";
+
+const FLASK_URL = "http://160.236.58.192:5000";
+const API_KEY = "আপনার_API_KEY_এখানে_দিবেন";
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-    if (!email || !password || password.length < 6) {
-      return NextResponse.json({ error: "email + password (6+ chars) required" }, { status: 400 });
+    
+    // 🐍 Python Flask-এ রেজিস্ট্রেশন রিকোয়েস্ট
+    const res = await fetch(`${FLASK_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-API-KEY": API_KEY },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    
+    if (!res.ok) {
+      return NextResponse.json({ error: data.error || "Registration failed" }, { status: res.status });
     }
-    const hash = await bcrypt.hash(password, 10);
-    const user = await createUser(email, hash);
-    return NextResponse.json({ ok: true, user: { id: user.id, email: user.email } });
+    
+    return NextResponse.json({ ok: true, user: data.user });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

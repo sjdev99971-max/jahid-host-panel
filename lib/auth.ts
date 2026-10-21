@@ -1,10 +1,9 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { findUser } from "./db";
 
-// ⚠️ SECURITY: Hardcoded secret — পরে Tunnel সেট হলে env var-এ সরাবে
-const NEXTAUTH_SECRET = "zCg4zMdz3060/vFHzf9LGBUcQKDQYkiHym4JWh0ZW3g=";
+const NEXTAUTH_SECRET = "আপনার_আগের_সিক্রেট_এখানে_দিবেন"; // আগের সিক্রেটটা বসিয়ে দিন
+const FLASK_URL = "http://160.236.58.192:5000";
+const API_KEY = "আপনার_API_KEY_এখানে_দিবেন"; // VPS এর .env থেকে
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -18,17 +17,29 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const user = await findUser(credentials.email);
-        if (!user) return null;
-        const ok = await bcrypt.compare(credentials.password, user.passwordHash);
-        if (!ok) return null;
-        return { id: user.id, email: user.email };
+        
+        try {
+          // 🐍 Python Flask-এ রিকোয়েস্ট পাঠাচ্ছে
+          const res = await fetch(`${FLASK_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-API-KEY": API_KEY },
+            body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+          });
+          
+          if (!res.ok) return null;
+          const data = await res.json();
+          
+          // NextAuth সেশন তৈরি হবে
+          return { id: data.user.id.toString(), email: data.user.email };
+        } catch (error) {
+          return null;
+        }
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.uid = (user as any).id;
+      if (user) token.uid = user.id;
       return token;
     },
     async session({ session, token }) {

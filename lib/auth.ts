@@ -3,6 +3,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { findUser } from "./db";
 
+// ⚠️ SECURITY: Hardcoded secret — পরে Tunnel সেট হলে env var-এ সরাবে
+const NEXTAUTH_SECRET = "zCg4zMdz3060/vFHzf9LGBUcQKDQYkiHym4JWh0ZW3g=";
+
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
@@ -33,5 +36,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: NEXTAUTH_SECRET,
 };

@@ -2,7 +2,6 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,21 +15,32 @@ export default function LoginPage() {
     setLoading(true); setErr("");
     
     try {
-      const res = await signIn("credentials", { 
+      // ৮ সেকেন্ডের টাইমআউট
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Timeout")), 8000)
+      );
+
+      const loginPromise = signIn("credentials", { 
         email, 
         password, 
         redirect: false 
       });
+
+      const res: any = await Promise.race([loginPromise, timeoutPromise]);
       
       if (res?.error) {
-        setErr("ভুল ইমেইল বা পাসওয়ার্ড, অথবা সার্ভার কানেক্ট হচ্ছে না!");
+        setErr("লগইন ফেইল! পাসওয়ার্ড ভুল অথবা ডাটাবেসে ইউজার নেই।");
         setLoading(false);
       } else {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch (error) {
-      setErr("সার্ভারে সমস্যা হচ্ছে!");
+    } catch (error: any) {
+      if (error.message === "Timeout") {
+        setErr("সার্ভার রেসপন্স করছে না (Timeout)! NextAuth কনফিগারেশন চেক করুন।");
+      } else {
+        setErr("একটি অজানা সমস্যা হয়েছে!");
+      }
       setLoading(false);
     }
   }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const FLASK_URL = "http://160.236.58.192:5000";
-const API_KEY = "CHANGE_ME_API_KEY";
+const API_KEY = "1e22d35fcacf16246a549d7b3489ae7836d0816315ab93aa";
 
 export async function POST(req: Request) {
   try {

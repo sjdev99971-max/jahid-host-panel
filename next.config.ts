@@ -3,19 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   env: {
-    NEXTAUTH_URL: "https://jahid.host", 
+    // আপনার মেইন ডোমেইন (www ছাড়া)
+    NEXTAUTH_URL: "https://jahid.host",
     NEXTAUTH_SECRET: "super_secret_jahid_host_2026_xyz123",
   },
-  async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.jahid.host" }],
-        destination: "https://jahid.host/:path*",
-        permanent: true,
-      },
-    ];
-  },
+  // redirects() অংশটি মুছে দেওয়া হয়েছে যাতে Vercel-এর সাথে কনফ্লিক্ট না হয়
 };
 
 export default nextConfig;

@@ -19,23 +19,22 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
         
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // ৫ সেকেন্ড টাইমআউট
-
+          console.log("Trying to connect to VPS...");
           const res = await fetch(`${FLASK_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-API-KEY": API_KEY },
             body: JSON.stringify({ email: credentials.email, password: credentials.password }),
-            signal: controller.signal
           });
           
-          clearTimeout(timeoutId);
-          if (!res.ok) return null;
+          if (!res.ok) {
+            console.log("VPS returned error status:", res.status);
+            return null; // ফেইল হলে null রিটার্ন করবে
+          }
           
           const data = await res.json();
           return { id: data.user.id.toString(), email: data.user.email };
         } catch (error) {
-          console.error("Auth Error:", error);
+          console.error("VPS Connection Error:", error);
           return null;
         }
       },

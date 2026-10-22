@@ -15,32 +15,21 @@ export default function LoginPage() {
     setLoading(true); setErr("");
     
     try {
-      // ৮ সেকেন্ডের টাইমআউট
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Timeout")), 8000)
-      );
-
-      const loginPromise = signIn("credentials", { 
+      const res = await signIn("credentials", { 
         email, 
         password, 
         redirect: false 
       });
-
-      const res: any = await Promise.race([loginPromise, timeoutPromise]);
       
       if (res?.error) {
-        setErr("লগইন ফেইল! পাসওয়ার্ড ভুল অথবা ডাটাবেসে ইউজার নেই।");
+        setErr("লগইন ফেইল! পাসওয়ার্ড ভুল অথবা VPS কানেক্ট হচ্ছে না।");
         setLoading(false);
-      } else {
+      } else if (res?.ok) {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch (error: any) {
-      if (error.message === "Timeout") {
-        setErr("সার্ভার রেসপন্স করছে না (Timeout)! NextAuth কনফিগারেশন চেক করুন।");
-      } else {
-        setErr("একটি অজানা সমস্যা হয়েছে!");
-      }
+    } catch (error) {
+      setErr("সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।");
       setLoading(false);
     }
   }

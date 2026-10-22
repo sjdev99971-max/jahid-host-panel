@@ -1,7 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const NEXTAUTH_SECRET = "5Jkw3qCXtwLb4jLwedEPbUh7lK4TXegEsZd5oP6i0xw=";
+const NEXTAUTH_SECRET = "super_secret_jahid_host_2026_xyz123";
 const FLASK_URL = "http://160.236.58.192:5000";
 const API_KEY = "CHANGE_ME_API_KEY";
 

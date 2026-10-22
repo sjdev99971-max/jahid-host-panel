@@ -1,5 +1,4 @@
 "use client";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -15,21 +14,21 @@ export default function LoginPage() {
     setLoading(true); setErr("");
     
     try {
-      const res = await signIn("credentials", { 
-        email, 
-        password, 
-        redirect: false 
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      
-      if (res?.error) {
-        setErr("লগইন ফেইল! পাসওয়ার্ড ভুল অথবা VPS কানেক্ট হচ্ছে না।");
+
+      if (res.ok) {
+        window.location.href = "/dashboard"; // হার্ড রিডাইরেক্ট (কুকি লোড হওয়ার জন্য)
+      } else {
+        const data = await res.json();
+        setErr(data.error || "লগইন ফেইল!");
         setLoading(false);
-      } else if (res?.ok) {
-        router.push("/dashboard");
-        router.refresh();
       }
-    } catch (error) {
-      setErr("সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।");
+    } catch (e) {
+      setErr("নেটওয়ার্ক সমস্যা!");
       setLoading(false);
     }
   }
@@ -49,7 +48,7 @@ export default function LoginPage() {
         
         <button type="submit" disabled={loading}
           className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl text-white font-bold transition-all">
-          {loading ? "Logging in..." : "Log in"}
+          {loading ? "Checking..." : "Log in"}
         </button>
       </form>
     </main>

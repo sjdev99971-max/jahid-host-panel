@@ -20,7 +20,6 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
         cursor: "#58a6ff",
         selectionBackground: "#3b5070",
       },
-      padding: 16,
     });
 
     const fitAddon = new FitAddon();
@@ -61,7 +60,7 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
 
   return (
     <div className="w-full h-full bg-[#0d1117] p-2 rounded-b-xl overflow-hidden">
-      <div ref={terminalRef} className="w-full h-full" />
+      <div ref={terminalRef} className="w-full h-full px-4 py-2" />
     </div>
   );
 }

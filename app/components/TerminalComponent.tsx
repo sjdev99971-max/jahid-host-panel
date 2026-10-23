@@ -42,6 +42,10 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
       term.writeln("\r\n\x1b[31m✖ Connection closed.\x1b[0m");
     };
 
+    ws.onerror = () => {
+      term.writeln("\r\n\x1b[33m⚠ WebSocket Error.\x1b[0m");
+    }
+
     term.onData((data) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(data);
@@ -59,8 +63,8 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
   }, [instanceId]);
 
   return (
-    <div className="w-full h-full bg-[#0d1117] p-2 rounded-b-xl overflow-hidden">
-      <div ref={terminalRef} className="w-full h-full px-4 py-2" />
+    <div className="w-full h-full bg-[#0d1117] p-2 overflow-hidden">
+      <div ref={terminalRef} className="w-full h-full px-2 py-1" />
     </div>
   );
 }

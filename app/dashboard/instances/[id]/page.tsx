@@ -1,10 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { Terminal, Folder, Play, Globe, Settings, ChevronLeft } from "lucide-react";
 import TerminalComponent from "@/app/components/TerminalComponent";
 import Link from "next/link";
 
-export default function InstanceManagePage({ params }: { params: { id: string } }) {
+// Next.js 16 এ params একটি Promise
+export default function InstanceManagePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const instanceId = resolvedParams.id;
+
   const [activeTab, setActiveTab] = useState("console");
 
   const tabs = [
@@ -26,7 +30,7 @@ export default function InstanceManagePage({ params }: { params: { id: string } 
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Manage Instance</h1>
-            <p className="text-sm text-slate-400">ID: {params.id}</p>
+            <p className="text-sm text-slate-400">ID: {instanceId}</p>
           </div>
         </div>
         <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -64,11 +68,12 @@ export default function InstanceManagePage({ params }: { params: { id: string } 
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
-              <span className="mx-auto text-xs text-slate-500 font-mono">root@{params.id} ~ bash</span>
+              <span className="mx-auto text-xs text-slate-500 font-mono">root@{instanceId} ~ bash</span>
             </div>
             
             <div className="flex-1 relative">
-              <TerminalComponent instanceId={params.id} />
+              {/* এখানে instanceId পাঠানো হচ্ছে */}
+              <TerminalComponent instanceId={instanceId} />
             </div>
           </div>
         )}

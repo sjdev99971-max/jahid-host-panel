@@ -12,14 +12,15 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
 
     const term = new Terminal({
       cursorBlink: true,
-      theme: {
-        background: "#0a0f1c",
-        foreground: "#e2e8f0",
-        cursor: "#6366f1",
-        selectionBackground: "#334155",
-      },
-      fontFamily: "monospace",
+      fontFamily: "'Fira Code', 'Courier New', monospace",
       fontSize: 14,
+      theme: {
+        background: "#0d1117",
+        foreground: "#c9d1d9",
+        cursor: "#58a6ff",
+        selectionBackground: "#3b5070",
+      },
+      padding: 16,
     });
 
     const fitAddon = new FitAddon();
@@ -27,12 +28,11 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
     term.open(terminalRef.current);
     fitAddon.fit();
 
-    // Connect to WSS (WebSocket Secure)
     const wsUrl = `wss://server006.jahid.host/ws/terminal?id=${instanceId}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      term.writeln("\x1b[32m✔ Connected to instance shell.\x1b[0m\r\n");
+      term.writeln("\x1b[32m✔ Connected to instance shell.\x1b[0m");
     };
 
     ws.onmessage = (event) => {
@@ -59,5 +59,9 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
     };
   }, [instanceId]);
 
-  return <div ref={terminalRef} className="w-full h-full p-2" />;
+  return (
+    <div className="w-full h-full bg-[#0d1117] p-2 rounded-b-xl overflow-hidden">
+      <div ref={terminalRef} className="w-full h-full" />
+    </div>
+  );
 }

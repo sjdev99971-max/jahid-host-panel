@@ -4,7 +4,8 @@ import { File, Folder, Save, ChevronRight, FileCode, FileText, X } from "lucide-
 
 export default function FileManager({ instanceId }: { instanceId: string }) {
   const [currentPath, setCurrentPath] = useState("/app");
-  const [files, setFiles] = useState<string[]>([]);
+  type FileItem = { name: string; isDir: boolean };
+  const [files, setFiles] = useState<FileItem[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState("");
   const [loading, setLoading] = useState(false);

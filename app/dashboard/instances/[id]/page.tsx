@@ -2,6 +2,7 @@
 import { useState, useEffect, use } from "react";
 import { Terminal, Folder, Play, Globe, Settings, ChevronLeft } from "lucide-react";
 import TerminalComponent from "@/app/components/TerminalComponent";
+import FileManager from "@/app/components/FileManager";
 import Link from "next/link";
 
 // Next.js 16 এ params একটি Promise
@@ -79,10 +80,8 @@ export default function InstanceManagePage({ params }: { params: Promise<{ id: s
         )}
 
         {activeTab === "files" && (
-          <div className="p-8 text-center text-slate-400 flex flex-col items-center justify-center h-full">
-            <Folder size={64} className="mb-4 opacity-20 text-indigo-400" />
-            <h2 className="text-xl text-white mb-2">File Manager</h2>
-            <p>Coming soon: Browse, upload, and edit files directly.</p>
+          <div className="w-full h-full">
+             <FileManager instanceId={instanceId} />
           </div>
         )}
 

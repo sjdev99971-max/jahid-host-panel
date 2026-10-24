@@ -32,10 +32,11 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
     let retryCount = 0;
 
     function connect() {
+      // URL এখানে আছে, কিন্তু কনসোলে প্রিন্ট হবে না
       const wsUrl = `wss://server006.jahid.host/ws/terminal?id=${instanceId}`;
       ws = new WebSocket(wsUrl);
       
-      term.writeln(`\x1b[33m⏳ Connecting to ${wsUrl}...\x1b[0m`);
+      term.writeln(`\x1b[33m⏳ Connecting...\x1b[0m`);
       setStatus("connecting");
 
       ws.onopen = () => {
@@ -51,20 +52,18 @@ export default function TerminalComponent({ instanceId }: { instanceId: string }
       ws.onclose = (e) => {
         setStatus("disconnected");
         if (e.wasClean) {
-          term.writeln("\r\n\x1b[31m✖ Connection closed cleanly.\x1b[0m");
+          term.writeln("\r\n\x1b[31m✖ Disconnected.\x1b[0m");
         } else {
-          term.writeln("\r\n\x1b[31m✖ Connection lost (Network Error).\x1b[0m");
-          // অটো রিট্রাই (সর্বোচ্চ ৩ বার)
+          term.writeln("\r\n\x1b[31m✖ Connection lost. Retrying...\x1b[0m");
           if (retryCount < 3) {
             retryCount++;
-            term.writeln(`\x1b[33m⚠ Retrying connection (${retryCount}/3)...\x1b[0m`);
             setTimeout(connect, 2000);
           }
         }
       };
 
       ws.onerror = () => {
-        term.writeln("\r\n\x1b[31m⚠ WebSocket Error! Check DNS or SSL.\x1b[0m");
+        term.writeln("\r\n\x1b[31m⚠ Error: Unable to connect.\x1b[0m");
       };
 
       term.onData((data) => {
